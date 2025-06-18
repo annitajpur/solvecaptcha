@@ -1,34 +1,34 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/bin/bash
 
-echo "🔧 Setting up..."
+# Your ngrok auth token
+NGROK_AUTH_TOKEN="1sKv56NfduxWmGA3RKNiJjCm8Y5_6X9tmT26u6WfKQX2jVsqG"
 
-# Ensure required tools
-pkg update -y
-pkg install -y python git wget tesseract termux-api
+# Add ngrok token (only the first time)
+ngrok config add-authtoken $NGROK_AUTH_TOKEN
 
-# Install Python requirements
-pip install -r requirements.txt
+# Start Flask app in background
+echo "🚀 Starting Flask server..."
+python3 server.py &
 
-# Download ngrok if not exists
-if [ ! -f "ngrok" ]; then
-    wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
-    unzip ngrok-stable-linux-arm.zip
-    chmod +x ngrok
-fi
-
-# Set NGROK token if not already set
-if [ ! -f ".ngrok_authtoken_set" ]; then
-    read -p "Enter your Ngrok Authtoken: " TOKEN
-    ./ngrok config add-authtoken "$TOKEN"
-    touch .ngrok_authtoken_set
-fi
-
-# Start ngrok and Flask
-echo "🚀 Starting Flask server and exposing via Ngrok..."
-nohup python app.py > flask.log 2>&1 &
-sleep 3
-nohup ./ngrok http 5000 > ngrok.log 2>&1 &
+# Wait a few seconds
 sleep 3
 
-# Display Ngrok public URL
-curl --silent http://localhost:4040/api/tunnels | grep -o 'https://[0-9a-z]*\.ngrok\.io'
+# Start ngrok in background
+echo "🌐 Starting ngrok tunnel..."
+ngrok http 5000 > ngrok.log &
+
+# Wait for ngrok to connect
+sleep 5
+
+# Extract ngrok public URL
+NGROK_URL=$(grep -o 'https://[0-9a-z]*\.ngrok-free\.app' ngrok.log | head -n 1)
+
+if [ -n "$NGROK_URL" ]; then
+  echo "✅ Server is live at: $NGROK_URL"
+else
+  echo "❌ Failed to get ngrok URL"
+fi
+
+# Keep the script running
+echo "🔁 Running... press Ctrl+C to exit"
+tail -f /dev/null
