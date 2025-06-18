@@ -37,8 +37,13 @@ pkg install -y python python3 wget curl git
 pip install --upgrade pip setuptools
 
 echo "📦 Installing Python packages..."
-pip install flask flask-cors pytesseract pillow
+pip install flask &
+sleep 5
 
+pip install flask-cors &
+sleep 5
+pip install pytesseract &
+sleep 5
 echo "📸 Installing Tesseract..."
 pkg install -y tesseract
 
