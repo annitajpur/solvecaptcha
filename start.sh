@@ -26,7 +26,7 @@ fi
 
 # Start Flask server
 echo "🚀 Starting Flask server..."
-python3 server.py &
+python3 app.py &
 
 # Wait for Flask
 sleep 3
