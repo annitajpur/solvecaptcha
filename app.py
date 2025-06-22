@@ -19,7 +19,7 @@ def solve_captcha():
         image_data = base64.b64decode(data['imageContent'])
         image = Image.open(io.BytesIO(image_data)).convert('L')
         raw_text = pytesseract.image_to_string(image)
-        allowed_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        allowed_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=@'
         cleaned_text = ''.join(c for c in raw_text if c in allowed_chars)
         return jsonify({'result': cleaned_text})
 
